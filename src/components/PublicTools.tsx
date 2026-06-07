@@ -170,6 +170,7 @@ const PublicTools = () => {
               description={tool.description}
               link={tool.link}
               thumbnailUrl={tool.thumbnail_url}
+              thumbnailPreviewUrl={tool.thumbnail_preview_url}
               thumbnailFullUrl={tool.thumbnail_full_url}
               borderColor={index % 2 === 0 ? 'cyan' : 'magenta'}
             />

@@ -160,6 +160,7 @@ const AdminDashboard = () => {
           link: tool.link,
           icon: tool.icon,
           thumbnail_url: tool.thumbnail_url || null,
+          thumbnail_preview_url: tool.thumbnail_preview_url || null,
           thumbnail_full_url: tool.thumbnail_full_url || null,
           is_internal: tool.is_internal,
         });
@@ -170,6 +171,7 @@ const AdminDashboard = () => {
           link: tool.link,
           icon: tool.icon,
           thumbnail_url: tool.thumbnail_url || null,
+          thumbnail_preview_url: tool.thumbnail_preview_url || null,
           thumbnail_full_url: tool.thumbnail_full_url || null,
           is_internal: tool.is_internal,
         });
@@ -264,7 +266,10 @@ const AdminDashboard = () => {
       const res = await api.uploads.thumbnail(file);
       setEditingTool({
         ...editingTool,
-        thumbnail_url: res.preview_url || res.url,
+        // New semantics: thumbnail_url is the main (bigger) thumbnail, preview is the smaller card image
+        thumbnail_url: res.full_url || null,
+        thumbnail_preview_url: res.preview_url || res.url,
+        // Backward compatibility field (unused by UI going forward)
         thumbnail_full_url: res.full_url || null,
       });
     } catch (error) {
@@ -381,7 +386,7 @@ const AdminDashboard = () => {
           </div>
 
           <button
-            onClick={() => setEditingTool({ id: '', title: '', description: '', link: '', icon: 'Music2', thumbnail_url: null, is_internal: false, display_order: 0 })}
+            onClick={() => setEditingTool({ id: '', title: '', description: '', link: '', icon: 'Music2', thumbnail_url: null, thumbnail_preview_url: null, thumbnail_full_url: null, is_internal: false, display_order: 0 })}
             className="md:ml-4 flex items-center justify-center gap-2 bg-white/5 backdrop-blur-sm border border-[#3BAAB8] 
                       text-white px-6 py-2.5 rounded-xl hover:shadow-[0_0_15px_rgba(59,170,184,0.2)] 
                       transition-all duration-300 font-medium"
@@ -614,9 +619,14 @@ const AdminDashboard = () => {
                     type="url"
                     placeholder="https://..."
                     value={editingTool.thumbnail_url || ''}
-                    onChange={(e) =>
-                      setEditingTool({ ...editingTool, thumbnail_url: e.target.value ? e.target.value : null })
-                    }
+                    onChange={(e) => {
+                      const v = e.target.value ? e.target.value : null;
+                      setEditingTool({
+                        ...editingTool,
+                        thumbnail_url: v,
+                        thumbnail_full_url: v,
+                      });
+                    }}
                     className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-[#3BAAB8] text-white 
                              focus:outline-none focus:ring-2 focus:ring-[#3BAAB8] focus:border-transparent
                              hover:border-[#3BAAB8]/80 transition-all duration-300"
@@ -646,7 +656,7 @@ const AdminDashboard = () => {
 
                     <button
                       type="button"
-                      onClick={() => setEditingTool({ ...editingTool, thumbnail_url: null, thumbnail_full_url: null })}
+                      onClick={() => setEditingTool({ ...editingTool, thumbnail_url: null, thumbnail_preview_url: null, thumbnail_full_url: null })}
                       className="px-4 py-2.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl 
                                text-white/80 hover:text-white hover:border-white/20 transition-all duration-300 font-medium"
                       disabled={thumbnailUploading}

@@ -43,6 +43,7 @@ export interface Tool {
   link: string;
   icon: string;
   thumbnail_url?: string | null;
+  thumbnail_preview_url?: string | null;
   thumbnail_full_url?: string | null;
   is_internal: boolean;
   display_order: number;

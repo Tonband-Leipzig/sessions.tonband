@@ -34,8 +34,45 @@ function loadTools() {
                         if (!isset($tool['thumbnail_url'])) {
                             $tool['thumbnail_url'] = null;
                         }
+                        if (!isset($tool['thumbnail_preview_url'])) {
+                            $tool['thumbnail_preview_url'] = null;
+                        }
                         if (!isset($tool['thumbnail_full_url'])) {
                             $tool['thumbnail_full_url'] = null;
+                        }
+
+                        // Backfill: if only a preview exists (older records), try to derive the main thumbnail_url
+                        if (!($tool['thumbnail_url'] ?? null) && ($tool['thumbnail_preview_url'] ?? null)) {
+                            $previewUrl = $tool['thumbnail_preview_url'];
+                            $parsed = @parse_url($previewUrl);
+                            $path = $parsed['path'] ?? '';
+
+                            $filenameBase = pathinfo($path, PATHINFO_FILENAME);
+
+                            // Try to find a matching original file by UUID base name
+                            global $CONFIG;
+                            $fullDir = rtrim($CONFIG['uploads_dir'], '/\\') . '/thumbnails';
+                            $matches = $filenameBase ? glob($fullDir . '/' . $filenameBase . '.*') : array();
+
+                            if ($matches && count($matches) > 0) {
+                                $fullFilename = basename($matches[0]);
+
+                                // Derive uploads base URL from the preview URL, preserving scheme/host
+                                $uploadsPos = strpos($path, '/uploads/');
+                                if ($uploadsPos !== false) {
+                                    $uploadsBasePath = substr($path, 0, $uploadsPos + strlen('/uploads/'));
+                                    $scheme = $parsed['scheme'] ?? '';
+                                    $host = $parsed['host'] ?? '';
+                                    $port = isset($parsed['port']) ? ':' . $parsed['port'] : '';
+                                    $origin = ($scheme && $host) ? ($scheme . '://' . $host . $port) : '';
+                                    $tool['thumbnail_url'] = $origin . $uploadsBasePath . 'thumbnails/' . $fullFilename;
+                                }
+                            }
+                        }
+
+                        // Backward compatibility: if thumbnail_full_url was used, mirror it into thumbnail_url
+                        if (!($tool['thumbnail_url'] ?? null) && ($tool['thumbnail_full_url'] ?? null)) {
+                            $tool['thumbnail_url'] = $tool['thumbnail_full_url'];
                         }
                     }
                     unset($tool);
@@ -116,6 +153,7 @@ switch ($method) {
             'link' => $body['link'],
             'icon' => isset($body['icon']) ? $body['icon'] : 'Music2',
             'thumbnail_url' => isset($body['thumbnail_url']) ? $body['thumbnail_url'] : null,
+            'thumbnail_preview_url' => isset($body['thumbnail_preview_url']) ? $body['thumbnail_preview_url'] : null,
             'thumbnail_full_url' => isset($body['thumbnail_full_url']) ? $body['thumbnail_full_url'] : null,
             'is_internal' => $bodyInternal,
             'display_order' => $maxOrder + 1,
@@ -141,6 +179,7 @@ switch ($method) {
                 if (isset($body['link'])) $tool['link'] = $body['link'];
                 if (isset($body['icon'])) $tool['icon'] = $body['icon'];
                 if (array_key_exists('thumbnail_url', $body)) $tool['thumbnail_url'] = $body['thumbnail_url'];
+                if (array_key_exists('thumbnail_preview_url', $body)) $tool['thumbnail_preview_url'] = $body['thumbnail_preview_url'];
                 if (array_key_exists('thumbnail_full_url', $body)) $tool['thumbnail_full_url'] = $body['thumbnail_full_url'];
                 if (isset($body['is_internal'])) $tool['is_internal'] = normalizeBool($body['is_internal']);
                 if (isset($body['display_order'])) $tool['display_order'] = (int)$body['display_order'];

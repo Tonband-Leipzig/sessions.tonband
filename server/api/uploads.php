@@ -145,7 +145,10 @@ switch ($action) {
         $fullUrl = $baseUrl . '/thumbnails/' . $fullFilename;
 
         // Generate preview (16:9) for card thumbnails
-        $previewUrl = $fullUrl;
+        $previewUrl = null;
+        $previewFilename = null;
+        $previewPath = null;
+
         if (function_exists('imagecreatetruecolor')) {
             $srcIm = createImageResource($fullPath, $mime);
             if ($srcIm !== false) {
@@ -173,6 +176,19 @@ switch ($action) {
                 if ($saved) {
                     $previewUrl = $baseUrl . '/thumbnails_preview/' . $previewFilename;
                 }
+            }
+        }
+
+        // Fallback: if we couldn't create a resized preview (e.g. missing GD), still create a preview file.
+        // This guarantees: two files exist (full + preview), and the UI can always use preview for the card.
+        if ($previewUrl === null) {
+            $previewFilename = $base . '.' . $ext;
+            $previewPath = $previewDir . '/' . $previewFilename;
+            if (@copy($fullPath, $previewPath)) {
+                $previewUrl = $baseUrl . '/thumbnails_preview/' . $previewFilename;
+            } else {
+                // As a last resort, fall back to the full URL (still works, but not optimal)
+                $previewUrl = $fullUrl;
             }
         }
 

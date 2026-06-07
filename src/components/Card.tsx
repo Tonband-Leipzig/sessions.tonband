@@ -7,6 +7,7 @@ interface CardProps {
   description: string;
   link: string;
   thumbnailUrl?: string | null;
+  thumbnailPreviewUrl?: string | null;
   thumbnailFullUrl?: string | null;
   isInternal?: boolean;
   borderColor: 'cyan' | 'magenta';
@@ -18,6 +19,7 @@ const Card: React.FC<CardProps> = ({
   description, 
   link, 
   thumbnailUrl,
+  thumbnailPreviewUrl,
   thumbnailFullUrl,
   isInternal = false,
   borderColor
@@ -42,10 +44,11 @@ const Card: React.FC<CardProps> = ({
   const colorScheme = colors[borderColor];
 
   const [thumbnailFailed, setThumbnailFailed] = React.useState(false);
-  const showThumbnail = !!thumbnailUrl && !thumbnailFailed;
+  const smallImageUrl = thumbnailPreviewUrl || thumbnailUrl;
+  const showThumbnail = !!smallImageUrl && !thumbnailFailed;
   const [previewOpen, setPreviewOpen] = React.useState(false);
 
-  const previewImageUrl = thumbnailFullUrl || thumbnailUrl;
+  const previewImageUrl = thumbnailUrl || thumbnailFullUrl || thumbnailPreviewUrl;
 
   React.useEffect(() => {
     if (!previewOpen) return;
@@ -81,7 +84,7 @@ const Card: React.FC<CardProps> = ({
             aria-label="Open thumbnail preview"
           >
             <img
-              src={thumbnailUrl || ''}
+              src={smallImageUrl || ''}
               alt=""
               className="h-full w-full object-cover"
               loading="lazy"
@@ -108,7 +111,7 @@ const Card: React.FC<CardProps> = ({
         </div>
       </a>
 
-      {previewOpen && showThumbnail && (
+      {previewOpen && !!previewImageUrl && (
         <div
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => setPreviewOpen(false)}
