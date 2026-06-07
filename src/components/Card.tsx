@@ -44,12 +44,8 @@ const Card: React.FC<CardProps> = ({
   const colorScheme = colors[borderColor];
 
   const [thumbnailFailed, setThumbnailFailed] = React.useState(false);
-  const isMobile =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(max-width: 768px)').matches;
-
   const smallImageUrl = thumbnailPreviewUrl || thumbnailUrl;
-  const showThumbnail = !!smallImageUrl && !thumbnailFailed && !isMobile;
+  const showThumbnail = !!smallImageUrl && !thumbnailFailed;
   const [previewOpen, setPreviewOpen] = React.useState(false);
 
   const previewImageUrl = thumbnailUrl || thumbnailFullUrl || thumbnailPreviewUrl;
