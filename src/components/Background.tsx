@@ -109,7 +109,7 @@ const Background: React.FC = () => {
                      md:w-[900px] md:h-[900px]
                      bg-gradient-to-r from-[#3BAAB8]/20 to-[#F471B5]/20
                      rounded-full blur-[200px]
-                     animate-float-glow1 animate-fade-glow1
+                     animate-float-glow1
                      transition-all duration-1000"
         />
         
@@ -118,7 +118,7 @@ const Background: React.FC = () => {
                      md:w-[600px] md:h-[600px]
                      bg-[#F471B5]/15 rounded-full 
                      blur-[180px]
-                     animate-float-glow2 animate-fade-glow2
+                     animate-float-glow2
                      transition-all duration-1000"
         />
         <div 
@@ -126,7 +126,7 @@ const Background: React.FC = () => {
                      md:w-[500px] md:h-[500px]
                      bg-[#3BAAB8]/15 rounded-full 
                      blur-[160px]
-                     animate-float-glow3 animate-fade-glow3
+                     animate-float-glow3
                      transition-all duration-1000"
         />
 
@@ -135,7 +135,7 @@ const Background: React.FC = () => {
                      md:w-[900px] md:h-[900px] w-[300px] h-[300px]
                      bg-gradient-to-r from-[#3BAAB8]/20 to-[#F471B5]/20
                      rounded-full blur-[180px] md:blur-[200px]
-                     animate-float-glow1 animate-fade-glow1
+                     animate-float-glow1
                      transition-all duration-1000"
         />
         
@@ -144,7 +144,7 @@ const Background: React.FC = () => {
                      md:w-[600px] md:h-[600px] w-[200px] h-[200px]
                      bg-[#F471B5]/15 rounded-full 
                      blur-[160px] md:blur-[180px]
-                     animate-float-glow2 animate-fade-glow2
+                     animate-float-glow2
                      transition-all duration-1000"
         />
         <div 
@@ -152,7 +152,7 @@ const Background: React.FC = () => {
                      md:w-[500px] md:h-[500px] w-[150px] h-[150px]
                      bg-[#3BAAB8]/15 rounded-full 
                      blur-[140px] md:blur-[160px]
-                     animate-float-glow3 animate-fade-glow3
+                     animate-float-glow3
                      transition-all duration-1000"
         />
       </div>

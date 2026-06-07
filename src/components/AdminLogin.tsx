@@ -35,8 +35,7 @@ const AdminLogin = () => {
       <div className="w-full max-w-md p-8 relative">
         <button
           onClick={() => navigate('/')}
-          className="absolute top-0 left-0 p-4 text-white/60 hover:text-white transition-colors flex items-center gap-2
-                   hover:text-[#3BAAB8]"
+          className="absolute top-0 left-0 p-4 text-white/60 hover:text-[#3BAAB8] transition-colors flex items-center gap-2"
         >
           <ArrowLeft size={20} />
           <span>Back</span>
