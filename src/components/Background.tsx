@@ -8,6 +8,10 @@ const Background: React.FC = () => {
     !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
     !window.matchMedia('(max-width: 768px)').matches;
 
+  const isMobile =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(max-width: 768px)').matches;
+
   useEffect(() => {
     if (!shouldAnimateCanvas) return;
 
@@ -100,6 +104,10 @@ const Background: React.FC = () => {
       window.removeEventListener('resize', resize);
     };
   }, []);
+
+  if (isMobile) {
+    return null;
+  }
 
   return (
     <>

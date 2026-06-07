@@ -44,8 +44,12 @@ const Card: React.FC<CardProps> = ({
   const colorScheme = colors[borderColor];
 
   const [thumbnailFailed, setThumbnailFailed] = React.useState(false);
+  const isMobile =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(max-width: 768px)').matches;
+
   const smallImageUrl = thumbnailPreviewUrl || thumbnailUrl;
-  const showThumbnail = !!smallImageUrl && !thumbnailFailed;
+  const showThumbnail = !!smallImageUrl && !thumbnailFailed && !isMobile;
   const [previewOpen, setPreviewOpen] = React.useState(false);
 
   const previewImageUrl = thumbnailUrl || thumbnailFullUrl || thumbnailPreviewUrl;
@@ -67,9 +71,9 @@ const Card: React.FC<CardProps> = ({
         href={link}
         target="_blank"
         rel="noopener noreferrer"
-        className={`group flex items-center bg-white/3 backdrop-blur-[10px] rounded-2xl border 
-                   overflow-hidden transition-all duration-300 hover:scale-[1.015] px-6 py-5
-                   ${colorScheme.border} ${colorScheme.shadow}`}
+        className={`group flex items-center bg-neutral-900/90 md:bg-white/3 md:backdrop-blur-[10px] rounded-2xl border 
+                   overflow-hidden transition-all duration-300 md:hover:scale-[1.015] px-6 py-5
+                   ${colorScheme.border} md:${colorScheme.shadow}`}
       >
         {showThumbnail ? (
           <button
@@ -111,7 +115,7 @@ const Card: React.FC<CardProps> = ({
         </div>
       </a>
 
-      {previewOpen && !!previewImageUrl && (
+      {previewOpen && showThumbnail && !!previewImageUrl && (
         <div
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={() => setPreviewOpen(false)}

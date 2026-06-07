@@ -55,8 +55,8 @@ function App() {
           <div className="absolute top-4 right-4 z-20">
             <button
               onClick={() => navigate('/admin')}
-              className="px-6 py-2.5 bg-white/5 backdrop-blur-sm border border-[#3BAAB8] rounded-xl 
-                       text-white hover:shadow-[0_0_15px_rgba(59,170,184,0.2)] hover:border-[#3BAAB8]/80
+              className="px-6 py-2.5 bg-neutral-900/90 md:bg-white/5 md:backdrop-blur-sm border border-[#3BAAB8] rounded-xl 
+                       text-white md:hover:shadow-[0_0_15px_rgba(59,170,184,0.2)] md:hover:border-[#3BAAB8]/80
                        transition-all duration-300 font-medium"
             >
               Login

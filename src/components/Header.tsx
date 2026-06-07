@@ -9,8 +9,11 @@ const Header: React.FC = () => {
         <img 
           src={logo}
           alt="ton.band Logo" 
-          className="w-full h-auto"
+          className="hidden md:block w-full h-auto"
         />
+        <div className="md:hidden text-3xl font-black text-white tracking-tight">
+          ton.band
+        </div>
       </div>
     </header>
   );

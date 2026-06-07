@@ -67,6 +67,8 @@ export const api = {
       let cache: { at: number; value: { success: boolean; tools: Tool[] } } | null = null;
       let inflight: Promise<{ success: boolean; tools: Tool[] }> | null = null;
 
+      const LS_KEY = 'tonband_tools_cache_v1';
+
       return (): Promise<{ success: boolean; tools: Tool[] }> => {
         const now = Date.now();
         if (cache && now - cache.at < 15000) {
@@ -78,6 +80,15 @@ export const api = {
         inflight = fetchApi('/tools.php').then((res) => {
           cache = { at: Date.now(), value: res };
           inflight = null;
+
+          try {
+            if (res && res.success && Array.isArray(res.tools)) {
+              localStorage.setItem(LS_KEY, JSON.stringify({ at: Date.now(), tools: res.tools }));
+            }
+          } catch {
+            // ignore cache write errors (private mode / quota)
+          }
+
           return res;
         }).catch((err) => {
           inflight = null;

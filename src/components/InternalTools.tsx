@@ -37,7 +37,28 @@ const InternalTools = () => {
       }
     };
 
-    fetchTools();
+    // Fast path for slow mobile networks: render cached tools immediately.
+    try {
+      const raw = localStorage.getItem('tonband_tools_cache_v1');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.tools)) {
+          const internalTools = parsed.tools.filter((t: Tool) => t.is_internal);
+          setTools(internalTools);
+          setLoading(false);
+        }
+      }
+    } catch {
+      // ignore cache read errors
+    }
+
+    // Hard timeout guard: never show loading forever on iOS Safari.
+    const hardTimeoutId = window.setTimeout(() => {
+      setLoading(false);
+      setError((prev) => prev || 'Loading timed out. Please check your connection.');
+    }, 20000);
+
+    fetchTools().finally(() => window.clearTimeout(hardTimeoutId));
   }, []);
 
   const iconMap: { [key: string]: typeof Music2 } = {
