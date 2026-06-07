@@ -8,6 +8,10 @@ async function fetchApi(path: string, options: RequestInit = {}) {
   const url = `${API_URL}${path}`;
   const token = localStorage.getItem('tonband_auth_token');
 
+  const controller = new AbortController();
+  const timeoutMs = 15000;
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
   const isFormDataBody = typeof FormData !== 'undefined' && options.body instanceof FormData;
 
   const headers: Record<string, string> = {
@@ -22,10 +26,16 @@ async function fetchApi(path: string, options: RequestInit = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    });
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 
   const data = await response.json().catch(() => ({}));
 
@@ -53,8 +63,30 @@ export interface Tool {
 
 export const api = {
   tools: {
-    list: (): Promise<{ success: boolean; tools: Tool[] }> =>
-      fetchApi('/tools.php'),
+    list: (() => {
+      let cache: { at: number; value: { success: boolean; tools: Tool[] } } | null = null;
+      let inflight: Promise<{ success: boolean; tools: Tool[] }> | null = null;
+
+      return (): Promise<{ success: boolean; tools: Tool[] }> => {
+        const now = Date.now();
+        if (cache && now - cache.at < 15000) {
+          return Promise.resolve(cache.value);
+        }
+
+        if (inflight) return inflight;
+
+        inflight = fetchApi('/tools.php').then((res) => {
+          cache = { at: Date.now(), value: res };
+          inflight = null;
+          return res;
+        }).catch((err) => {
+          inflight = null;
+          throw err;
+        });
+
+        return inflight;
+      };
+    })(),
 
     get: (id: string): Promise<{ success: boolean; tool: Tool }> =>
       fetchApi(`/tools.php?id=${encodeURIComponent(id)}`),

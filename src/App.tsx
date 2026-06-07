@@ -16,10 +16,16 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Don't block the whole app on auth verification.
+    // On mobile/slow networks the verify request can take a long time (or hang),
+    // which previously caused a black screen with "Loading...".
+    // We render immediately using the cached session, and verify in the background.
+    setIsAdmin(!!auth.getUser());
+    setLoading(false);
+
     const refresh = () => {
       auth.getSession().then(({ user }) => {
         setIsAdmin(!!user);
-        setLoading(false);
       });
     };
 

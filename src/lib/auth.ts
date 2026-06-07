@@ -17,6 +17,10 @@ async function fetchApi(path: string, options: RequestInit = {}) {
   const url = `${API_URL}${path}`;
   const token = localStorage.getItem(TOKEN_KEY);
 
+  const controller = new AbortController();
+  const timeoutMs = 10000;
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...((options.headers as Record<string, string>) || {}),
@@ -26,10 +30,16 @@ async function fetchApi(path: string, options: RequestInit = {}) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    });
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 
   const data = await response.json().catch(() => ({}));
 

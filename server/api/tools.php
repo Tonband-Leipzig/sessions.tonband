@@ -74,6 +74,40 @@ function loadTools() {
                         if (!($tool['thumbnail_url'] ?? null) && ($tool['thumbnail_full_url'] ?? null)) {
                             $tool['thumbnail_url'] = $tool['thumbnail_full_url'];
                         }
+
+                        // Backward compatibility: if a legacy record stored the preview in thumbnail_url, move it to thumbnail_preview_url
+                        if (($tool['thumbnail_url'] ?? null) && !($tool['thumbnail_preview_url'] ?? null)) {
+                            $parsedLegacy = @parse_url($tool['thumbnail_url']);
+                            $legacyPath = $parsedLegacy['path'] ?? '';
+                            if ($legacyPath && strpos($legacyPath, '/uploads/thumbnails_preview/') !== false) {
+                                $tool['thumbnail_preview_url'] = $tool['thumbnail_url'];
+                            }
+                        }
+
+                        // Backfill preview URL for older records (when only the main thumbnail exists)
+                        if (($tool['thumbnail_url'] ?? null) && !($tool['thumbnail_preview_url'] ?? null)) {
+                            $mainUrl = $tool['thumbnail_url'];
+                            $parsed = @parse_url($mainUrl);
+                            $path = $parsed['path'] ?? '';
+                            $filenameBase = pathinfo($path, PATHINFO_FILENAME);
+
+                            global $CONFIG;
+                            $previewDir = rtrim($CONFIG['uploads_dir'], '/\\') . '/thumbnails_preview';
+                            $matches = $filenameBase ? glob($previewDir . '/' . $filenameBase . '.*') : array();
+
+                            if ($matches && count($matches) > 0) {
+                                $previewFilename = basename($matches[0]);
+                                $uploadsPos = strpos($path, '/uploads/');
+                                if ($uploadsPos !== false) {
+                                    $uploadsBasePath = substr($path, 0, $uploadsPos + strlen('/uploads/'));
+                                    $scheme = $parsed['scheme'] ?? '';
+                                    $host = $parsed['host'] ?? '';
+                                    $port = isset($parsed['port']) ? ':' . $parsed['port'] : '';
+                                    $origin = ($scheme && $host) ? ($scheme . '://' . $host . $port) : '';
+                                    $tool['thumbnail_preview_url'] = $origin . $uploadsBasePath . 'thumbnails_preview/' . $previewFilename;
+                                }
+                            }
+                        }
                     }
                     unset($tool);
                     return array('tools' => $data['tools'], 'source' => $file);
