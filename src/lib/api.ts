@@ -8,10 +8,15 @@ async function fetchApi(path: string, options: RequestInit = {}) {
   const url = `${API_URL}${path}`;
   const token = localStorage.getItem('tonband_auth_token');
 
+  const isFormDataBody = typeof FormData !== 'undefined' && options.body instanceof FormData;
+
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
     ...((options.headers as Record<string, string>) || {}),
   };
+
+  if (!isFormDataBody && !headers['Content-Type'] && !headers['content-type']) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -37,6 +42,8 @@ export interface Tool {
   description: string;
   link: string;
   icon: string;
+  thumbnail_url?: string | null;
+  thumbnail_full_url?: string | null;
   is_internal: boolean;
   display_order: number;
   created_at?: string;
@@ -68,5 +75,15 @@ export const api = {
       fetchApi(`/tools.php?id=${encodeURIComponent(id)}`, {
         method: 'DELETE',
       }),
+  },
+  uploads: {
+    thumbnail: (file: File): Promise<{ success: boolean; url: string; preview_url?: string; full_url?: string }> => {
+      const body = new FormData();
+      body.append('file', file);
+      return fetchApi('/uploads.php?action=thumbnail', {
+        method: 'POST',
+        body,
+      });
+    },
   },
 };

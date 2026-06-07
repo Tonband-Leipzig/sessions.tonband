@@ -97,6 +97,8 @@ const InternalTools = () => {
               title={tool.title}
               description={tool.description}
               link={tool.link}
+              thumbnailUrl={tool.thumbnail_url}
+              thumbnailFullUrl={tool.thumbnail_full_url}
               isInternal
               borderColor={index % 2 === 0 ? 'cyan' : 'magenta'}
             />

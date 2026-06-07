@@ -119,6 +119,7 @@ const AdminDashboard = () => {
   const [filterInternal, setFilterInternal] = useState<boolean | null>(null);
   const [iconPickerOpen, setIconPickerOpen] = useState(false);
   const [iconSearch, setIconSearch] = useState('');
+  const [thumbnailUploading, setThumbnailUploading] = useState(false);
 
   const handleUnauthorized = () => {
     auth.signOut();
@@ -158,6 +159,8 @@ const AdminDashboard = () => {
           description: tool.description,
           link: tool.link,
           icon: tool.icon,
+          thumbnail_url: tool.thumbnail_url || null,
+          thumbnail_full_url: tool.thumbnail_full_url || null,
           is_internal: tool.is_internal,
         });
       } else {
@@ -166,6 +169,8 @@ const AdminDashboard = () => {
           description: tool.description,
           link: tool.link,
           icon: tool.icon,
+          thumbnail_url: tool.thumbnail_url || null,
+          thumbnail_full_url: tool.thumbnail_full_url || null,
           is_internal: tool.is_internal,
         });
       }
@@ -250,6 +255,30 @@ const AdminDashboard = () => {
       setIconSearch('');
     }
   }, [editingTool]);
+
+  const handleThumbnailUpload = async (file: File) => {
+    try {
+      if (!editingTool) return;
+      setThumbnailUploading(true);
+      setError(null);
+      const res = await api.uploads.thumbnail(file);
+      setEditingTool({
+        ...editingTool,
+        thumbnail_url: res.preview_url || res.url,
+        thumbnail_full_url: res.full_url || null,
+      });
+    } catch (error) {
+      console.error('Error uploading thumbnail:', error);
+      const message = error instanceof Error ? error.message : String(error);
+      if (message.includes('401')) {
+        handleUnauthorized();
+        return;
+      }
+      setError('Failed to upload thumbnail. Please try again.');
+    } finally {
+      setThumbnailUploading(false);
+    }
+  };
 
   const filteredTools = tools.filter(tool => {
     const matchesSearch = tool.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -352,7 +381,7 @@ const AdminDashboard = () => {
           </div>
 
           <button
-            onClick={() => setEditingTool({ id: '', title: '', description: '', link: '', icon: 'Music2', is_internal: false, display_order: 0 })}
+            onClick={() => setEditingTool({ id: '', title: '', description: '', link: '', icon: 'Music2', thumbnail_url: null, is_internal: false, display_order: 0 })}
             className="md:ml-4 flex items-center justify-center gap-2 bg-white/5 backdrop-blur-sm border border-[#3BAAB8] 
                       text-white px-6 py-2.5 rounded-xl hover:shadow-[0_0_15px_rgba(59,170,184,0.2)] 
                       transition-all duration-300 font-medium"
@@ -385,6 +414,11 @@ const AdminDashboard = () => {
                         <IconComponent size={24} />
                       </div>
                       <h3 className="text-xl font-bold text-white">{tool.title}</h3>
+                      {tool.thumbnail_url && (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-white/70">
+                          Thumbnail
+                        </span>
+                      )}
                     </div>
                     <p className="text-neutral-300 mt-2">{tool.description}</p>
                     <p className="text-sm text-neutral-400 mt-2">Link: {tool.link}</p>
@@ -568,6 +602,67 @@ const AdminDashboard = () => {
                           );
                         })}
                       </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-neutral-300 mb-1">Thumbnail</label>
+                <div className="flex flex-col gap-3">
+                  <input
+                    type="url"
+                    placeholder="https://..."
+                    value={editingTool.thumbnail_url || ''}
+                    onChange={(e) =>
+                      setEditingTool({ ...editingTool, thumbnail_url: e.target.value ? e.target.value : null })
+                    }
+                    className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-[#3BAAB8] text-white 
+                             focus:outline-none focus:ring-2 focus:ring-[#3BAAB8] focus:border-transparent
+                             hover:border-[#3BAAB8]/80 transition-all duration-300"
+                  />
+
+                  <div className="flex items-center gap-3">
+                    <label
+                      className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-[#3BAAB8] 
+                               text-white hover:shadow-[0_0_15px_rgba(59,170,184,0.2)] hover:border-[#3BAAB8]/80
+                               transition-all duration-300 font-medium cursor-pointer
+                               ${thumbnailUploading ? 'opacity-60 pointer-events-none' : ''}`}
+                    >
+                      <Upload size={18} />
+                      {thumbnailUploading ? 'Uploading...' : 'Upload thumbnail'}
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          handleThumbnailUpload(file);
+                          e.currentTarget.value = '';
+                        }}
+                      />
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => setEditingTool({ ...editingTool, thumbnail_url: null, thumbnail_full_url: null })}
+                      className="px-4 py-2.5 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl 
+                               text-white/80 hover:text-white hover:border-white/20 transition-all duration-300 font-medium"
+                      disabled={thumbnailUploading}
+                    >
+                      Clear
+                    </button>
+                  </div>
+
+                  {editingTool.thumbnail_url && (
+                    <div className="h-16 aspect-video overflow-hidden rounded-xl bg-white/5 border border-white/10">
+                      <img
+                        src={editingTool.thumbnail_url}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
                     </div>
                   )}
                 </div>

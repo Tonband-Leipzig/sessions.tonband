@@ -31,6 +31,12 @@ function loadTools() {
                 if (json_last_error() === JSON_ERROR_NONE && isset($data['tools'])) {
                     foreach ($data['tools'] as &$tool) {
                         $tool['is_internal'] = normalizeBool($tool['is_internal']);
+                        if (!isset($tool['thumbnail_url'])) {
+                            $tool['thumbnail_url'] = null;
+                        }
+                        if (!isset($tool['thumbnail_full_url'])) {
+                            $tool['thumbnail_full_url'] = null;
+                        }
                     }
                     unset($tool);
                     return array('tools' => $data['tools'], 'source' => $file);
@@ -109,6 +115,8 @@ switch ($method) {
             'description' => isset($body['description']) ? $body['description'] : '',
             'link' => $body['link'],
             'icon' => isset($body['icon']) ? $body['icon'] : 'Music2',
+            'thumbnail_url' => isset($body['thumbnail_url']) ? $body['thumbnail_url'] : null,
+            'thumbnail_full_url' => isset($body['thumbnail_full_url']) ? $body['thumbnail_full_url'] : null,
             'is_internal' => $bodyInternal,
             'display_order' => $maxOrder + 1,
             'created_at' => date('c'),
@@ -132,6 +140,8 @@ switch ($method) {
                 if (isset($body['description'])) $tool['description'] = $body['description'];
                 if (isset($body['link'])) $tool['link'] = $body['link'];
                 if (isset($body['icon'])) $tool['icon'] = $body['icon'];
+                if (array_key_exists('thumbnail_url', $body)) $tool['thumbnail_url'] = $body['thumbnail_url'];
+                if (array_key_exists('thumbnail_full_url', $body)) $tool['thumbnail_full_url'] = $body['thumbnail_full_url'];
                 if (isset($body['is_internal'])) $tool['is_internal'] = normalizeBool($body['is_internal']);
                 if (isset($body['display_order'])) $tool['display_order'] = (int)$body['display_order'];
                 $tool['updated_at'] = date('c');
