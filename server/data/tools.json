@@ -1,0 +1,125 @@
+{
+  "tools": [
+    {
+      "id": "8c8f9930-c0c2-459e-88e4-3ad25e9ef3ec",
+      "title": "Tickets",
+      "description": "tonband Session Ticket",
+      "link": "https://tonbandleipzig.setmore.com",
+      "icon": "Ticket",
+      "is_internal": false,
+      "display_order": 1,
+      "created_at": "2025-05-09T12:33:05.352797+00:00",
+      "updated_at": "2025-05-09T18:57:12.459+00:00"
+    },
+    {
+      "id": "9b30e6b1-b93a-457f-b1c8-66df5419f13e",
+      "title": "Session Ablauf",
+      "description": "Was passiert wann? Übersicht über den Ablauf der ton.band Sessions",
+      "link": "https://tonbandsessions-coxqbu1.gamma.site/",
+      "icon": "CalendarClock",
+      "is_internal": false,
+      "display_order": 2,
+      "created_at": "2025-05-08T09:30:33.638223+00:00",
+      "updated_at": "2025-05-08T09:30:33.638223+00:00"
+    },
+    {
+      "id": "37792e0e-9a62-4153-911b-f07648636d13",
+      "title": "Voting App",
+      "description": "Wähle und Vote die Songs für die nächste Session.",
+      "link": "https://tonbandsession.netlify.app/",
+      "icon": "Music2",
+      "is_internal": false,
+      "display_order": 3,
+      "created_at": "2025-05-08T09:32:10.173986+00:00",
+      "updated_at": "2025-05-08T09:33:53.147+00:00"
+    },
+    {
+      "id": "0ad16a86-679f-4d7d-af01-256637fa4176",
+      "title": "Jam Generator App",
+      "description": "Ideen für freie Jams generieren.",
+      "link": "https://tonbandsession-generator.netlify.app/",
+      "icon": "Lightbulb",
+      "is_internal": false,
+      "display_order": 4,
+      "created_at": "2025-05-08T09:33:38.719548+00:00",
+      "updated_at": "2025-05-08T10:58:24.873+00:00"
+    },
+    {
+      "id": "badb238a-54c6-4e2f-9716-d07659acbb72",
+      "title": "Galerie",
+      "description": "Bilder, Videos & Promo-Material",
+      "link": "https://ton-band.vercel.app/gallery",
+      "icon": "ImageIcon",
+      "is_internal": false,
+      "display_order": 5,
+      "created_at": "2025-05-08T09:34:42.815997+00:00",
+      "updated_at": "2025-05-08T09:34:42.815997+00:00"
+    },
+    {
+      "id": "270937cc-34f0-42ec-b1dd-59e03c130a68",
+      "title": "Instagram",
+      "description": "Folge uns auf Instagram für Behind-the-Scenes und Updates",
+      "link": "https://instagram.com/ton.bandleipzig",
+      "icon": "MessageSquare",
+      "is_internal": false,
+      "display_order": 6,
+      "created_at": "2025-05-15T07:22:28.679017+00:00",
+      "updated_at": "2025-05-15T09:06:47.22+00:00"
+    },
+    {
+      "id": "612a373f-27fe-4591-a01b-b5201a344fe2",
+      "title": "YouTube",
+      "description": "Entdecke unsere Video-Content auf YouTube",
+      "link": "https://youtube.com/@tonbandleipzig",
+      "icon": "Video",
+      "is_internal": false,
+      "display_order": 7,
+      "created_at": "2025-05-15T07:22:28.679017+00:00",
+      "updated_at": "2025-05-15T09:05:05.493+00:00"
+    },
+    {
+      "id": "81dd682d-6ee1-4948-a26a-462862da4cb4",
+      "title": "TikTok",
+      "description": "Folge uns auf TikTok für kurze Highlights",
+      "link": "https://tiktok.com/@tonbandleipzig",
+      "icon": "Play",
+      "is_internal": false,
+      "display_order": 8,
+      "created_at": "2025-05-15T07:22:28.679017+00:00",
+      "updated_at": "2025-05-15T09:04:53.794+00:00"
+    },
+    {
+      "id": "177a4e69-25eb-46af-a374-280840e92043",
+      "title": "Community",
+      "description": "Tritt unserer WhatsApp Community bei",
+      "link": "https://chat.whatsapp.com/IIZpQr2XNWdEO3ub34znOl",
+      "icon": "MessageSquare",
+      "is_internal": false,
+      "display_order": 9,
+      "created_at": "2025-05-15T07:22:28.679017+00:00",
+      "updated_at": "2025-05-15T09:23:49.751+00:00"
+    },
+    {
+      "id": "67272700-df5d-49da-9e54-527c7520a92d",
+      "title": "Sound Schedule App",
+      "description": "Sounds & Jingles für die Sessions organisieren und planen",
+      "link": "https://sound.scheduler.tonbandleipzig.de",
+      "icon": "AudioWaveform",
+      "is_internal": true,
+      "display_order": 1,
+      "created_at": "2025-05-08T09:36:23.390499+00:00",
+      "updated_at": "2025-09-10T15:54:09.759+00:00"
+    },
+    {
+      "id": "ac9e8385-1358-4792-8127-523d2b6693e6",
+      "title": "Session Timmer / Ablaufanzeige",
+      "description": "Visualisierung des aktuellen Session Ablaufs",
+      "link": "https://tonbandsession-timer.netlify.app/",
+      "icon": "Music2",
+      "is_internal": true,
+      "display_order": 2,
+      "created_at": "2025-05-08T09:37:39.006407+00:00",
+      "updated_at": "2025-05-08T09:39:50.528+00:00"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# Protect uploads directory
+Options -Indexes
+
+# Deny execution of PHP in uploads
+<FilesMatch "\.(php|php\.|phtml|php5|php7)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Deny access to .htaccess itself
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
