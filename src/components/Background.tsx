@@ -3,7 +3,14 @@ import React, { useEffect, useRef } from 'react';
 const Background: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const shouldAnimateCanvas =
+    typeof window !== 'undefined' &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+    !window.matchMedia('(max-width: 768px)').matches;
+
   useEffect(() => {
+    if (!shouldAnimateCanvas) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -98,6 +105,32 @@ const Background: React.FC = () => {
     <>
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div 
+          className="hidden md:block absolute top-[20%] left-1/2 
+                     md:w-[900px] md:h-[900px]
+                     bg-gradient-to-r from-[#3BAAB8]/20 to-[#F471B5]/20
+                     rounded-full blur-[200px]
+                     animate-float-glow1 animate-fade-glow1
+                     transition-all duration-1000"
+        />
+        
+        <div 
+          className="hidden md:block absolute bottom-0 right-0 
+                     md:w-[600px] md:h-[600px]
+                     bg-[#F471B5]/15 rounded-full 
+                     blur-[180px]
+                     animate-float-glow2 animate-fade-glow2
+                     transition-all duration-1000"
+        />
+        <div 
+          className="hidden md:block absolute top-0 left-0 
+                     md:w-[500px] md:h-[500px]
+                     bg-[#3BAAB8]/15 rounded-full 
+                     blur-[160px]
+                     animate-float-glow3 animate-fade-glow3
+                     transition-all duration-1000"
+        />
+
+        <div 
           className="absolute top-[20%] left-1/2 
                      md:w-[900px] md:h-[900px] w-[300px] h-[300px]
                      bg-gradient-to-r from-[#3BAAB8]/20 to-[#F471B5]/20
@@ -124,10 +157,12 @@ const Background: React.FC = () => {
         />
       </div>
 
-      <canvas
-        ref={canvasRef}
-        className="fixed inset-0 w-full h-full z-0 pointer-events-none opacity-60"
-      />
+      {shouldAnimateCanvas && (
+        <canvas
+          ref={canvasRef}
+          className="fixed inset-0 w-full h-full z-0 pointer-events-none opacity-60"
+        />
+      )}
     </>
   );
 };
