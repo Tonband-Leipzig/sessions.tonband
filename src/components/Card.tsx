@@ -43,18 +43,17 @@ const Card: React.FC<CardProps> = ({
       target="_blank"
       rel="noopener noreferrer"
       className={`group flex items-center bg-white/3 backdrop-blur-[10px] rounded-2xl border 
-                 overflow-hidden transition-all duration-300 hover:scale-[1.02] p-6
+                 overflow-hidden transition-all duration-300 hover:scale-[1.015] px-6 py-5
                  ${colorScheme.border} ${colorScheme.shadow}`}
     >
-      <div className={`${colorScheme.icon} ${colorScheme.iconShadow}
-                      transition-all duration-300
-                      group-hover:scale-110 mr-6`}>
-        <Icon size={36} strokeWidth={1.5} />
+      <div className={`mr-5 flex h-12 w-12 items-center justify-center rounded-xl bg-white/5 border border-white/10
+                      ${colorScheme.icon} ${colorScheme.iconShadow}
+                      transition-all duration-300 group-hover:scale-105 group-hover:border-white/20`}>
+        <Icon size={26} strokeWidth={1.6} />
       </div>
       
       <div className="flex-1">
-        <h3 className={`text-xl font-bold text-white tracking-wide ${colorScheme.hoverTitle} transition-colors flex items-center gap-2`}>
-         
+        <h3 className={`text-[17px] md:text-lg font-semibold text-white tracking-tight ${colorScheme.hoverTitle} transition-colors flex items-center gap-2`}>
           {title}
         </h3>
         <p className="text-[#909296] text-sm leading-relaxed opacity-80 group-hover:text-white/70 transition-colors mt-1">

@@ -117,6 +117,13 @@ const AdminDashboard = () => {
   const [saveLoading, setSaveLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterInternal, setFilterInternal] = useState<boolean | null>(null);
+  const [iconPickerOpen, setIconPickerOpen] = useState(false);
+  const [iconSearch, setIconSearch] = useState('');
+
+  const handleUnauthorized = () => {
+    auth.signOut();
+    navigate('/admin');
+  };
 
   useEffect(() => {
     fetchTools();
@@ -129,6 +136,11 @@ const AdminDashboard = () => {
       setTools(data || []);
     } catch (error) {
       console.error('Error fetching tools:', error);
+      const message = error instanceof Error ? error.message : String(error);
+      if (message.includes('401')) {
+        handleUnauthorized();
+        return;
+      }
       setError('Failed to load tools. Please try again.');
     } finally {
       setLoading(false);
@@ -162,6 +174,11 @@ const AdminDashboard = () => {
       await fetchTools();
     } catch (error) {
       console.error('Error saving tool:', error);
+      const message = error instanceof Error ? error.message : String(error);
+      if (message.includes('401')) {
+        handleUnauthorized();
+        return;
+      }
       setError('Failed to save tool. Please try again.');
     } finally {
       setSaveLoading(false);
@@ -177,6 +194,11 @@ const AdminDashboard = () => {
       await fetchTools();
     } catch (error) {
       console.error('Error deleting tool:', error);
+      const message = error instanceof Error ? error.message : String(error);
+      if (message.includes('401')) {
+        handleUnauthorized();
+        return;
+      }
       setError('Failed to delete tool. Please try again.');
     }
   };
@@ -221,6 +243,13 @@ const AdminDashboard = () => {
     auth.signOut();
     navigate('/');
   };
+
+  useEffect(() => {
+    if (!editingTool) {
+      setIconPickerOpen(false);
+      setIconSearch('');
+    }
+  }, [editingTool]);
 
   const filteredTools = tools.filter(tool => {
     const matchesSearch = tool.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -460,23 +489,88 @@ const AdminDashboard = () => {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-300 mb-1">Icon</label>
-                <select
-                  value={editingTool.icon}
-                  onChange={(e) => setEditingTool({ ...editingTool, icon: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-[#3BAAB8] text-white 
-                           focus:outline-none focus:ring-2 focus:ring-[#3BAAB8] focus:border-transparent
-                           hover:border-[#3BAAB8]/80 transition-all duration-300"
-                >
-                  {Object.entries(iconGroups).map(([groupName, icons]) => (
-                    <optgroup key={groupName} label={groupName}>
-                      {Object.entries(icons).map(([iconName, label]) => (
-                        <option key={iconName} value={iconName}>
-                          {label}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ))}
-                </select>
+                <div className="relative">
+                  {(() => {
+                    const CurrentIcon = iconMap[editingTool.icon] || Music2;
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => setIconPickerOpen((v) => !v)}
+                        className="w-full px-4 py-2.5 rounded-xl bg-white/5 border border-[#3BAAB8] text-white
+                                 focus:outline-none focus:ring-2 focus:ring-[#3BAAB8] focus:border-transparent
+                                 hover:border-[#3BAAB8]/80 transition-all duration-300
+                                 flex items-center justify-between gap-3"
+                      >
+                        <span className="flex items-center gap-3 min-w-0">
+                          <CurrentIcon size={18} className="shrink-0" />
+                          <span className="truncate text-sm">
+                            {editingTool.icon}
+                          </span>
+                        </span>
+                        <span className="text-white/60 text-sm">▾</span>
+                      </button>
+                    );
+                  })()}
+
+                  {iconPickerOpen && (
+                    <div className="absolute z-50 mt-2 w-full rounded-xl border border-[#3BAAB8] bg-[#0b0f12]/95 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,0,0,0.35)] overflow-hidden">
+                      <div className="p-3 border-b border-white/10">
+                        <input
+                          type="text"
+                          value={iconSearch}
+                          onChange={(e) => setIconSearch(e.target.value)}
+                          placeholder="Search icons..."
+                          className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder-white/40
+                                   focus:outline-none focus:ring-2 focus:ring-[#3BAAB8] focus:border-transparent"
+                        />
+                      </div>
+
+                      <div className="max-h-72 overflow-auto p-2">
+                        {Object.entries(iconGroups).map(([groupName, icons]) => {
+                          const entries = Object.entries(icons).filter(([iconName, label]) => {
+                            if (!iconSearch.trim()) return true;
+                            const q = iconSearch.trim().toLowerCase();
+                            return iconName.toLowerCase().includes(q) || label.toLowerCase().includes(q);
+                          });
+
+                          if (entries.length === 0) return null;
+
+                          return (
+                            <div key={groupName} className="mb-2">
+                              <div className="px-2 py-1 text-xs uppercase tracking-wide text-white/50">
+                                {groupName}
+                              </div>
+                              <div className="grid grid-cols-1 gap-1">
+                                {entries.map(([iconName, label]) => {
+                                  const IconComponent = iconMap[iconName] || Music2;
+                                  const active = editingTool.icon === iconName;
+                                  return (
+                                    <button
+                                      key={iconName}
+                                      type="button"
+                                      onClick={() => {
+                                        setEditingTool({ ...editingTool, icon: iconName });
+                                        setIconPickerOpen(false);
+                                      }}
+                                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors
+                                        ${active ? 'bg-white/10 border border-white/10' : 'hover:bg-white/5'}`}
+                                    >
+                                      <IconComponent size={18} className="text-white/80" />
+                                      <div className="min-w-0">
+                                        <div className="text-sm text-white truncate">{label}</div>
+                                        <div className="text-xs text-white/50 truncate">{iconName}</div>
+                                      </div>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="flex items-center gap-2">
