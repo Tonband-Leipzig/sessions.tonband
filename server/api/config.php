@@ -27,10 +27,26 @@ $ALLOWED_ORIGINS = [
 ];
 
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (in_array($origin, $ALLOWED_ORIGINS)) {
+header('Vary: Origin');
+
+$originAllowed = false;
+if ($origin !== '' && in_array($origin, $ALLOWED_ORIGINS)) {
+    $originAllowed = true;
+}
+
+// Allow Vercel preview/production domains without having to hardcode each one
+if (!$originAllowed && $origin !== '' && preg_match('/^https:\/\/([a-z0-9-]+\.)?vercel\.app$/i', $origin)) {
+    $originAllowed = true;
+}
+
+if ($originAllowed) {
     header('Access-Control-Allow-Origin: ' . $origin);
 } else {
-    header('Access-Control-Allow-Origin: https://tonbandleipzig.de');
+    // If the request is same-origin (no Origin header), allow the canonical origin.
+    // If Origin is present but not allowed, do NOT send a mismatching Allow-Origin header.
+    if ($origin === '') {
+        header('Access-Control-Allow-Origin: https://tonbandleipzig.de');
+    }
 }
 
 header('Content-Type: application/json; charset=utf-8');
@@ -48,8 +64,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 $CONFIG = [
     // Admin credentials (change these in production!)
     // Password hash: generate with password_hash('your_password', PASSWORD_DEFAULT)
-    'admin_email'    => 'admin@tonband.sessions',
-    'admin_password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // = "password"
+    'admin_username' => 'admin',
+    'admin_password' => '$2y$12$DmPxxIGFvUY2qJa0hrVa2OBmgHua99kkqPiN4sqFYmXgnTTxNBLyy',
     
     // JWT-like simple token secret (change this in production!)
     'token_secret'   => 'change-this-secret-in-production-2026',

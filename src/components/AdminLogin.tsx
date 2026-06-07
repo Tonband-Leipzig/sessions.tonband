@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,8 +17,8 @@ const AdminLogin = () => {
     setError(null);
 
     try {
-      console.log('[LOGIN] Attempting login with:', email);
-      await auth.signIn(email, password);
+      console.log('[LOGIN] Attempting login with:', username);
+      await auth.signIn(username, password);
       console.log('[LOGIN] Success, navigating to /admin');
       navigate('/admin');
     } catch (err) {
@@ -57,18 +57,18 @@ const AdminLogin = () => {
                       hover:shadow-[0_0_20px_rgba(59,170,184,0.2)] transition-all duration-300">
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-neutral-300 mb-2">
-                Email
+              <label htmlFor="username" className="block text-sm font-medium text-neutral-300 mb-2">
+                Username
               </label>
               <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40
                          focus:outline-none focus:ring-2 focus:ring-[#3BAAB8] focus:border-transparent
                          hover:border-white/20 transition-all duration-300"
-                placeholder="Enter your email"
+                placeholder="Enter your username"
                 required
               />
             </div>

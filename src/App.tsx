@@ -16,10 +16,18 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    auth.getSession().then(({ user }) => {
-      setIsAdmin(!!user);
-      setLoading(false);
-    });
+    const refresh = () => {
+      auth.getSession().then(({ user }) => {
+        setIsAdmin(!!user);
+        setLoading(false);
+      });
+    };
+
+    refresh();
+
+    const onAuthChanged = () => refresh();
+    window.addEventListener('tonband-auth-changed', onAuthChanged);
+    return () => window.removeEventListener('tonband-auth-changed', onAuthChanged);
   }, []);
 
   if (loading) {

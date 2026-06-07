@@ -6,9 +6,10 @@ if (!API_URL) {
 
 const TOKEN_KEY = 'tonband_auth_token';
 const USER_KEY = 'tonband_auth_user';
+const AUTH_EVENT = 'tonband-auth-changed';
 
 interface AuthUser {
-  email: string;
+  username: string;
   role: string;
 }
 
@@ -40,11 +41,11 @@ async function fetchApi(path: string, options: RequestInit = {}) {
 }
 
 export const auth = {
-  signIn: async (email: string, password: string): Promise<void> => {
+  signIn: async (username: string, password: string): Promise<void> => {
     console.log('[AUTH] Sending login request...');
     const data = await fetchApi('/auth.php', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, password }),
     });
     console.log('[AUTH] Response:', data);
 
@@ -55,12 +56,14 @@ export const auth = {
 
     localStorage.setItem(TOKEN_KEY, data.token);
     localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+    window.dispatchEvent(new Event(AUTH_EVENT));
     console.log('[AUTH] Token saved, login successful');
   },
 
   signOut: (): void => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    window.dispatchEvent(new Event(AUTH_EVENT));
   },
 
   getSession: async (): Promise<{ user: AuthUser | null }> => {

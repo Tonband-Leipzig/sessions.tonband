@@ -18,28 +18,44 @@ if ($method !== 'POST' && $action === 'login') {
 }
 
 switch ($action) {
+    case 'health':
+        // Non-sensitive diagnostics to confirm server file structure / active config
+        jsonResponse([
+            'success' => true,
+            'health' => true,
+            'php_version' => PHP_VERSION,
+            'method' => $method,
+            'config' => [
+                'admin_username' => $CONFIG['admin_username'] ?? null,
+                'token_expire' => $CONFIG['token_expire'] ?? null,
+                'tools_file' => $CONFIG['tools_file'] ?? null,
+                'tools_file_exists' => isset($CONFIG['tools_file']) ? file_exists($CONFIG['tools_file']) : false,
+            ],
+        ]);
+        break;
+
     case 'login':
         $body = getJsonBody();
-        $email = $body['email'] ?? '';
+        $username = $body['username'] ?? '';
         $password = $body['password'] ?? '';
         
-        if (empty($email) || empty($password)) {
-            jsonError('Email and password are required', 400);
+        if (empty($username) || empty($password)) {
+            jsonError('Username and password are required', 400);
         }
         
         // Verify credentials
-        if ($email !== $CONFIG['admin_email'] || !password_verify($password, $CONFIG['admin_password'])) {
+        if ($username !== ($CONFIG['admin_username'] ?? '') || !password_verify($password, $CONFIG['admin_password'])) {
             jsonError('Invalid credentials', 401);
         }
         
         // Generate token
-        $token = generateToken(['email' => $email, 'role' => 'admin']);
+        $token = generateToken(['username' => $username, 'role' => 'admin']);
         
         jsonResponse([
             'success' => true,
             'token' => $token,
             'user' => [
-                'email' => $email,
+                'username' => $username,
                 'role' => 'admin'
             ]
         ]);
@@ -51,7 +67,7 @@ switch ($action) {
             'success' => true,
             'valid' => true,
             'user' => [
-                'email' => $payload['email'],
+                'username' => $payload['username'] ?? null,
                 'role' => $payload['role']
             ]
         ]);
